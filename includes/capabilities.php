@@ -15,6 +15,21 @@ function podlove_init_capabilities() {
 }
 
 /**
+ * Grant every role the same permissions for podcasts as they already have for posts
+ */
+function podlove_copy_post_capabilities_to_podcasts() {
+	foreach (array_keys(wp_roles()->roles) as $role_name) {
+		$role = get_role($role_name);
+		$post_type_capabilities = (array) $GLOBALS['wp_post_types']['podcast']->cap;
+		foreach ($post_type_capabilities as $cap_post => $cap_podcast) {
+			if ($role->has_cap($cap_post)) {
+				$role->add_cap($cap_podcast);
+			}
+		}
+	}
+}
+
+/**
  * Add capability to a list of roles.
  * 
  * @param  string $capability WordPress capability.
