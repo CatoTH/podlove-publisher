@@ -21,6 +21,7 @@ function activate_for_current_blog() {
 	Model\GeoAreaName::build();
 
 	\podlove_init_capabilities();
+	\podlove_copy_post_capabilities_to_podcasts();
 
 	if ( ! Model\FileType::has_entries() ) {
 		$default_types = array(
