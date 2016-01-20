@@ -23,8 +23,8 @@ class FileController {
 			current_user_can('edit_podcasts') ||
 			current_user_can('edit_others_podcasts') ||
 			current_user_can('publish_podcasts') ||
-		    current_user_can('edit_published_podcasts') ||
-		    current_user_can('edit_private_podcasts')
+			current_user_can('edit_published_podcasts') ||
+			current_user_can('edit_private_podcasts')
 		);
 	}
 
