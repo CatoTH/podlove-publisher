@@ -1,7 +1,6 @@
 <?php
 namespace Podlove\AJAX;
 
-use \Podlove\Model\Template;
 use \Podlove\Model\MediaFile;
 
 class FileController {
@@ -16,8 +15,26 @@ class FileController {
 			add_action( 'wp_ajax_podlove-file-' . $action, array( __CLASS__, str_replace( '-', '_', $action ) ) );
 	}
 
+	/**
+	 * @return bool
+	 */
+	public static function user_has_podcast_rights() {
+		return (
+			current_user_can('edit_podcasts') ||
+			current_user_can('edit_others_podcasts') ||
+			current_user_can('publish_podcasts') ||
+		    current_user_can('edit_published_podcasts') ||
+		    current_user_can('edit_private_podcasts')
+		);
+	}
+
 	public static function update() {
 		$file_id = (int) $_REQUEST['file_id'];
+
+		if ( !static::user_has_podcast_rights() ) {
+			Ajax::respond_with_json( array('error' => 'Insufficient permissions') );
+			return;
+		}
 
 		$file = MediaFile::find_by_id( $file_id );
 
@@ -56,6 +73,11 @@ class FileController {
 		$episode_id        = (int) $_REQUEST['episode_id'];
 		$episode_asset_id  = (int) $_REQUEST['episode_asset_id'];
 
+		if ( !static::user_has_podcast_rights() ) {
+			Ajax::respond_with_json( array('error' => 'Insufficient permissions') );
+			return;
+		}
+
 		if ( ! $episode_id || ! $episode_asset_id )
 			die();
 
@@ -73,7 +95,7 @@ class FileController {
 
 	private static function simulate_temporary_episode_slug( $slug ) {
 		add_filter( 'podlove_file_url_template', function ( $template ) use ( $slug ) {
-			return str_replace( '%episode_slug%', \Podlove\slugify( $slug ), $template );;
+			return str_replace( '%episode_slug%', \Podlove\slugify( $slug ), $template );
 		} );
 	}
 }
