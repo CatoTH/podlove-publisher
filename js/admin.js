@@ -184,7 +184,7 @@ function clean_up_input() {
 					break;
 				}
 			}	
-		});
+		}).trigger("change");
 	}(jQuery));
 }
 
