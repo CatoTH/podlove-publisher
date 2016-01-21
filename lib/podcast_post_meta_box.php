@@ -40,7 +40,15 @@ class Podcast_Post_Meta_Box {
 
 		<?php do_action('podlove_episode_meta_box_start'); ?>
 
-		<input type="hidden" name="show-media-file-base-uri" value="<?php echo $podcast->media_file_base_uri; ?>" />
+		<?php
+		// hidden fields for JavaScript
+		$blog_id             = $podcast->get_blog_id();;
+		$log_link            = get_admin_url($blog_id, 'admin.php?page=podlove_settings_handle');
+		$media_settings_link = get_admin_url($blog_id, 'admin.php?page=podlove_settings_podcast_handle&podlove_tab=media');
+		?>
+		<input type="hidden" name="show-media-file-base-uri" value="<?php echo esc_attr( $podcast->media_file_base_uri ); ?>" />
+		<input type="hidden" name="podlove-admin-log-link" value="<?php echo esc_attr( $log_link ); ?>" />
+		<input type="hidden" name="podlove-admin-media-settings-link" value="<?php echo esc_attr( $media_settings_link ); ?>" />
 		<div class="podlove-div-wrapper-form">
 			<?php 
 			$form_args = array(

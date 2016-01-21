@@ -83,7 +83,7 @@ var PODLOVE = PODLOVE || {};
 	 			url: ajaxurl,
 	 			data: {
 	 				action: 'podlove-episode-slug',
-	 				title: title,
+					title: title
 	 			},
 	 			context: o.slug_field
 	 		}).done(function(slug) {
@@ -95,8 +95,8 @@ var PODLOVE = PODLOVE || {};
 
 	 	o.update_preview_row = function(container) {
 
-	 		$container = container.closest('.inside');
-	 		$checkbox  = container.find("input");
+			var $container = container.closest('.inside');
+			var $checkbox  = container.find("input");
 
 	 		if ($($checkbox).is(":checked")) {
 	 			var file_id = $checkbox.data('id');
@@ -119,15 +119,18 @@ var PODLOVE = PODLOVE || {};
 	 				var $row          = $checkbox.closest(".media_file_row");
 
 	 				var isNumber = function (obj) { return !isNaN(parseFloat(obj)) };
+					var size_html;
 
 	 				if (readable_size === "???") {
-	 					size_html = '<span style="color:red">File not found!</span>';
-	 					$row.find(".status").html('<i class="podlove-icon-remove"></i>');
-	 				} else {
+						size_html = $('<span style="color:red">File not found! ' +
+							'<a style="font-size: 0.8em; text-decoration: none;">Log</a></span>');
+						size_html.find("a").attr("href", $("input[name=podlove-admin-log-link]").val());
+						$row.find(".status").html('<i class="podlove-icon-remove"></i>');
+					} else {
 	 					if (isNumber(size)) {
-		 					size_html = '<span style="color:#0a0b0b" title="' + readable_size + '">' + size + ' Bytes</span>';	
+							size_html = '<span style="color:#0a0b0b" title="' + readable_size + '">' + size + ' Bytes</span>';
 	 					} else {
-	 						size_html = '<span>' + size + '</span>';	
+							size_html = '<span>' + size + '</span>';
 	 					}
 	 					$row.find(".status").html('<i class="podlove-icon-ok"></i>');
 	 				}
@@ -150,7 +153,7 @@ var PODLOVE = PODLOVE || {};
  			$(".media_file_row", o.container).each(function() {
  				o.update_preview_row($(this));
  			});
- 		}
+		};
 
  		o.slug_field = container.find("[name*=slug]");
  		enable_all_media_files_by_default();
@@ -180,7 +183,18 @@ var PODLOVE = PODLOVE || {};
  			$(".enable", this).html($(".asset input", this));
  		});
 
- 		$(".row__podlove_meta_episode_assets > span > label").after(" <a href='#' id='update_all_media_files'>update all media files</a>")
+		var media_file_base_uri = $("input[name=show-media-file-base-uri]").val();
+
+		// regexp taken from js/admin.js
+		if ( ! media_file_base_uri.match(/^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]+-?)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/[^\s]*)?$/i) ) {
+			var $alert = $("<div><span class='dashicons dashicons-warning' style='font-size: 24px; float: left; margin-right: 10px;'></span>" +
+				"The Upload Location is not configured yet, therefore we will not be able to find the episode assets here.<br>" +
+				"Please go to the <a>Podcast Settings</a> and configure the Upload Location to go on.</div>");
+			$alert.find("a").attr("href", $("input[name=podlove-admin-media-settings-link]").val());
+			$(".row__podlove_meta_episode_assets > span > label").after($alert);
+		}
+
+		$(".row__podlove_meta_episode_assets > span > label").after(" <a href='#' id='update_all_media_files'>update all media files</a>");
 
  		var update_all_media_files = function(e) {
  			if (e) {
