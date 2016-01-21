@@ -96,7 +96,7 @@ class Logging extends \Podlove\Modules\Base {
 					[<?php echo date( 'Y-m-d H:i:s', $log_entry->time ) ?>]
 				</span>
 				<span class="log-message">
-					<?php echo $log_entry->message; ?>
+					<?php echo nl2br( $log_entry->message ); ?>
 				</span>
 				<span class="log-extra">
 					<?php
